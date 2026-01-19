@@ -1,0 +1,41 @@
+version: '3.8'
+
+# TWIGG Financial Query System
+# This configuration uses cloud services for MongoDB and Redis
+# - MongoDB Atlas (cloud database)
+# - Redis Cloud (cloud cache)
+# The Node.js API runs as a Docker container
+
+services:
+  # Node.js Backend API Service
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: twigg-api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=3000
+      # MongoDB Atlas (external cloud database)
+      - MONGODB_URI=${MONGODB_URI}
+      # Redis Cloud (external cloud cache)
+      - REDIS_URL=${REDIS_URL}
+      # OpenAI API
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # Cache settings
+      - CACHE_TTL=${CACHE_TTL:-3600}
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+# Usage:
+# 1. Create a .env file in the project root with your credentials
+# 2. Run: docker-compose up -d
+# 3. Check logs: docker-compose logs -f api
+# 4. Access: http://localhost:3000/health

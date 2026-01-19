@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TWIGG - Money, Made Simple</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #2a3c2a;
+            --bg-darker: #1e2d1e;
+            --accent-gold: #c4a24c;
+            --accent-gold-light: #d4b45c;
+            --text-white: #ffffff;
+            --text-gray: #9ca89c;
+            --card-dark: #3a4d3a;
+            --card-darker: #2d3f2d;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(ellipse at 70% 50%, #3a4d3a 0%, #2a3c2a 30%, #1e2d1e 70%);
+            min-height: 100vh;
+            color: var(--text-white);
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 25px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--card-dark);
+            padding: 12px 22px;
+            border-radius: 30px;
+        }
+
+        .logo-icon {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-white);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            border: 2px solid var(--text-white);
+            border-radius: 50%;
+        }
+
+        .logo span {
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-select {
+            background: var(--card-dark);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-white);
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            outline: none;
+            min-width: 180px;
+        }
+
+        .user-select option {
+            background: var(--bg-dark);
+            color: var(--text-white);
+        }
+
+        .status-btn {
+            background: var(--accent-gold);
+            color: #1a2a1a;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: default;
+        }
+
+        .status-btn.offline {
+            background: #6b4444;
+            color: #ffaaaa;
+        }
+
+        /* Main Layout */
+        main {
+            min-height: 100vh;
+            display: flex;
+            padding: 120px 50px 50px;
+        }
+
+        .left-content {
+            flex: 1;
+            max-width: 500px;
+            padding-top: 40px;
+        }
+
+        .right-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Typography */
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.5rem;
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 25px;
+        }
+
+        h1 .italic {
+            font-style: italic;
+            display: block;
+            color: var(--accent-gold);
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-gray);
+            font-style: italic;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        /* User greeting */
+        .user-greeting {
+            background: rgba(196, 162, 76, 0.15);
+            border: 1px solid rgba(196, 162, 76, 0.3);
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .user-greeting.visible {
+            display: block;
+        }
+
+        .user-greeting strong {
+            color: var(--accent-gold);
+        }
+
+        /* Query Box */
+        .query-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 16px 20px;
+            color: var(--text-white);
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--text-gray);
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent-gold);
+        }
+
+        .ask-btn {
+            background: var(--accent-gold);
+            color: #1a2a1a;
+            border: none;
+            border-radius: 10px;
+            padding: 16px 28px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .ask-btn:hover {
+            background: var(--accent-gold-light);
+        }
+
+        .ask-btn:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        /* Example Pills */
+        .examples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pill {
+            background: var(--card-dark);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-white);
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .pill:hover {
+            background: var(--accent-gold);
+            color: #1a2a1a;
+            border-color: var(--accent-gold);
+        }
+
+        /* Right side - Concentric circles */
+        .circles-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .circle-1 {
+            width: 400px;
+            height: 400px;
+        }
+
+        .circle-2 {
+            width: 320px;
+            height: 320px;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .circle-3 {
+            width: 240px;
+            height: 240px;
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        /* Center Icon */
+        .center-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(145deg, #4a5f4a, #3a4d3a);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .target-icon {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--text-white);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .target-icon::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 35px;
+            height: 35px;
+            border: 3px solid var(--text-white);
+            border-radius: 50%;
+        }
+
+        .target-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: var(--text-white);
+            border-radius: 50%;
+        }
+
+        /* Feature Cards */
+        .feature-card {
+            position: absolute;
+            background: var(--card-dark);
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            white-space: nowrap;
+        }
+
+        .feature-card.gold {
+            background: var(--accent-gold);
+            color: #1a2a1a;
+        }
+
+        .card-1 {
+            top: 10%;
+            left: 15%;
+        }
+
+        .card-2 {
+            top: 20%;
+            right: 5%;
+        }
+
+        .card-3 {
+            bottom: 25%;
+            left: 5%;
+        }
+
+        .card-4 {
+            bottom: 15%;
+            right: 10%;
+        }
+
+        /* Result Section */
+        .result-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 25px;
+            display: none;
+        }
+
+        .result-box.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .result-title {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.3rem;
+        }
+
+        .badges {
+            display: flex;
+            gap: 8px;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .badge.user {
+            background: rgba(196, 162, 76, 0.3);
+            color: var(--accent-gold);
+        }
+
+        .badge.cache {
+            background: rgba(100, 200, 100, 0.2);
+            color: #88dd88;
+        }
+
+        .badge.fresh {
+            background: rgba(196, 162, 76, 0.2);
+            color: var(--accent-gold);
+        }
+
+        .badge.time {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-gray);
+        }
+
+        .answer-text {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 12px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-gray);
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--accent-gold);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .error {
+            background: rgba(180, 80, 80, 0.2);
+            border: 1px solid #aa6666;
+            color: #ffaaaa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .debug-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-gray);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-family: inherit;
+        }
+
+        .debug-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .debug-box {
+            margin-top: 12px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 11px;
+            color: var(--text-gray);
+            max-height: 200px;
+            overflow: auto;
+            display: none;
+        }
+
+        .debug-box.visible {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .right-content {
+                display: none;
+            }
+
+            main {
+                justify-content: center;
+            }
+
+            .left-content {
+                max-width: 600px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 15px 20px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            main {
+                padding: 140px 20px 30px;
+            }
+
+            h1 {
+                font-size: 3rem;
+            }
+
+            .input-row {
+                flex-direction: column;
+            }
+
+            .ask-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-icon"></div>
+            <span>TWIGG</span>
+        </div>
+        <div class="header-right">
+            <select id="userSelect" class="user-select" onchange="selectUser()">
+                <option value="">Select a user...</option>
+            </select>
+            <button id="statusBtn" class="status-btn">Connecting...</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="left-content">
+            <h1>
+                <span class="italic">Money,</span>
+                Made simple!
+            </h1>
+            <p class="subtitle">
+                Trusted guidance for every<br>
+                money move you make
+            </p>
+
+            <div id="userGreeting" class="user-greeting">
+                Querying data for: <strong id="selectedUserName">-</strong>
+            </div>
+
+            <div class="query-container">
+                <div class="input-row">
+                    <input type="text" id="questionInput" placeholder="Ask anything about your finances..."
+                        onkeypress="if(event.key === 'Enter') ask()">
+                    <button class="ask-btn" id="askBtn" onclick="ask()">Ask Now</button>
+                </div>
+            </div>
+
+            <div class="examples">
+                <button class="pill" onclick="setQ('How much did I spend on food?')">Food spending</button>
+                <button class="pill" onclick="setQ('Show my spending by category')">By category</button>
+                <button class="pill" onclick="setQ('What is my total portfolio value?')">Portfolio</button>
+                <button class="pill" onclick="setQ('What stocks do I own?')">My stocks</button>
+                <button class="pill" onclick="setQ('Show my mutual fund holdings')">Mutual funds</button>
+            </div>
+
+            <div id="resultBox" class="result-box">
+                <div class="result-header">
+                    <span class="result-title">Answer</span>
+                    <div class="badges" id="badges"></div>
+                </div>
+                <div class="answer-text" id="answerText"></div>
+                <button class="debug-btn" onclick="toggleDebug()">🔧 Query Details</button>
+                <pre class="debug-box" id="debugBox"></pre>
+            </div>
+        </div>
+
+        <div class="right-content">
+            <div class="circles-container">
+                <div class="circle circle-1"></div>
+                <div class="circle circle-2"></div>
+                <div class="circle circle-3"></div>
+
+                <div class="center-icon">
+                    <div class="target-icon"></div>
+                </div>
+
+                <div class="feature-card card-1">💳 Transaction Analysis</div>
+                <div class="feature-card gold card-2">📊 Portfolio Insights</div>
+                <div class="feature-card card-3">📈 Mutual Funds</div>
+                <div class="feature-card card-4">🏦 Smart Queries</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API = 'http://localhost:3000';
+        let currentUser = null;
+
+        async function init() {
+            await checkStatus();
+            await loadUsers();
+        }
+
+        async function checkStatus() {
+            const btn = document.getElementById('statusBtn');
+            try {
+                await fetch(`${API}/health`);
+                btn.textContent = '✓ Connected';
+                btn.className = 'status-btn';
+            } catch {
+                btn.textContent = '✗ Offline';
+                btn.className = 'status-btn offline';
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const res = await fetch(`${API}/api/users`);
+                const data = await res.json();
+                const select = document.getElementById('userSelect');
+
+                data.users.forEach(user => {
+                    const option = document.createElement('option');
+                    option.value = JSON.stringify({ id: user.id, name: user.name });
+                    option.textContent = user.name;
+                    select.appendChild(option);
+                });
+            } catch (e) {
+                console.error('Failed to load users:', e);
+            }
+        }
+
+        function selectUser() {
+            const select = document.getElementById('userSelect');
+            const greeting = document.getElementById('userGreeting');
+            const userName = document.getElementById('selectedUserName');
+
+            if (select.value) {
+                currentUser = JSON.parse(select.value);
+                userName.textContent = currentUser.name;
+                greeting.classList.add('visible');
+            } else {
+                currentUser = null;
+                greeting.classList.remove('visible');
+            }
+        }
+
+        function setQ(q) {
+            document.getElementById('questionInput').value = q;
+        }
+
+        async function ask() {
+            if (!currentUser) {
+                alert('Please select a user first!');
+                return;
+            }
+
+            const q = document.getElementById('questionInput').value.trim();
+            if (!q) return;
+
+            const btn = document.getElementById('askBtn');
+            const box = document.getElementById('resultBox');
+            const answer = document.getElementById('answerText');
+            const badges = document.getElementById('badges');
+            const debug = document.getElementById('debugBox');
+
+            btn.disabled = true;
+            btn.textContent = 'Thinking...';
+            box.classList.add('visible');
+            answer.innerHTML = '<div class="loading"><div class="spinner"></div>Processing...</div>';
+            badges.innerHTML = '';
+            debug.textContent = '';
+            debug.classList.remove('visible');
+
+            try {
+                const res = await fetch(`${API}/api/query`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        question: q,
+                        userId: currentUser.id,
+                        userName: currentUser.name
+                    })
+                });
+                const data = await res.json();
+
+                if (data.error) {
+                    answer.innerHTML = `<div class="error">❌ ${data.message}</div>`;
+                } else {
+                    answer.textContent = data.answer;
+                    badges.innerHTML = `
+                        <span class="badge user">👤 ${currentUser.name}</span>
+                        <span class="badge ${data.fromCache ? 'cache' : 'fresh'}">${data.fromCache ? '📦 Cached' : '🔄 Fresh'}</span>
+                        <span class="badge time">⏱️ ${data.processingTime}ms</span>
+                    `;
+                    debug.textContent = JSON.stringify({ query: data.queryExecuted, data: data.dataRetrieved }, null, 2);
+                }
+            } catch (e) {
+                answer.innerHTML = '<div class="error">❌ Server offline. Run: node src/index.js</div>';
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Ask Now';
+        }
+
+        function toggleDebug() {
+            document.getElementById('debugBox').classList.toggle('visible');
+        }
+
+        init();
+        setInterval(checkStatus, 5000);
+    </script>
+</body>
+
+</html>
